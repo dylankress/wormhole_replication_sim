@@ -1,9 +1,9 @@
 # wormhole_replication_sim.py
 
-from config import SIMULATION_TICKS, REPLICATION_FACTOR, MAX_REPLICATION_FACTOR
+from config import SIMULATION_TICKS, REPLICATION_FACTOR, MAX_REPLICATION_FACTOR, SIMULATION_CYCLES
 from host_generator import generate_hosts
 from simulation_clock import SimulationClock
-from uploader import Uploader  # <-- don't forget to import your Uploader!
+from uploader import Uploader
 from downloader import Downloader
 
 # Global mutable replication factor
