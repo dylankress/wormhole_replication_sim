@@ -31,3 +31,9 @@ class Downloader:
         else:
             print(f"Download Failed: {available_hosts} hosts available, {unavailable_hosts} hosts unavailable.")
 
+        return {
+            'success': found_file,
+            'available_hosts': available_hosts,
+            'unavailable_hosts': unavailable_hosts
+        }
+

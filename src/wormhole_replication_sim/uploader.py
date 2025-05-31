@@ -33,3 +33,10 @@ class Uploader:
         success_rate = (success_count / total) * 100 if total > 0 else 0
 
         print(f"Upload Attempt: {success_count} successes, {fail_count} failures ({success_rate:.2f}% success rate)")
+
+        return {
+            'successes': success_count,
+            'failures': fail_count,
+            'success_rate': success_rate
+        }
+
