@@ -36,7 +36,7 @@ def run_simulation(replication_factor, writer, cycle, seed_offset):
             host.cycle_uptime()
 
         if not upload_attempted and clock.current_tick >= wait_ticks:
-            upload_stats = uploader.attempt_upload(hosts)
+            upload_stats = uploader.attempt_upload(hosts, replication_factor=replication_factor)
             print(f"Uploader attempted at tick {clock.current_tick}")
             file_ready_tick = clock.current_tick
             downloader = Downloader(file_ready_tick, seed_offset=seed_offset)

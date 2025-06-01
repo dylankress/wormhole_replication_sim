@@ -1,7 +1,7 @@
 # uploader.py
 
 import random
-from config import UPLOAD_WAIT_TIME_MINUTES
+from config import UPLOAD_WAIT_TIME_MINUTES, NUMBER_OF_CHUNKS
 
 class Uploader:
     def __init__(self):
@@ -15,28 +15,41 @@ class Uploader:
 
         print(f"Uploader will wait {wait_ticks} ticks before attempting upload...")
 
-        # Instead of real time wait, just return wait_ticks for the simulation to wait in the main loop
         return wait_ticks
 
-    def attempt_upload(self, hosts):
-        success_count = 0
-        fail_count = 0
+    def attempt_upload(self, hosts, replication_factor):
+        """
+        Improved upload: pick only online hosts at upload time.
+        """
+        # 🆕 Find all currently online hosts
+        online_hosts = [host for host in hosts if host.is_online]
 
-        for host in hosts:
-            if host.is_online:
-                host.hosted_file.add(self.file)
-                success_count += 1
-            else:
-                fail_count += 1
+        if not online_hosts:
+            print("No hosts are online at upload time! Upload will fail completely.")
+            return {
+                'successes': 0,
+                'failures': replication_factor * NUMBER_OF_CHUNKS,
+                'success_rate': 0.0
+            }
 
-        total = success_count + fail_count
-        success_rate = (success_count / total) * 100 if total > 0 else 0
+        total_upload_attempts = 0
+        total_successful_uploads = 0
 
-        print(f"Upload Attempt: {success_count} successes, {fail_count} failures ({success_rate:.2f}% success rate)")
+        for chunk_id in range(NUMBER_OF_CHUNKS):
+            for _ in range(replication_factor):
+                # 🆕 Choose from *only* online hosts
+                chosen_host = random.choice(online_hosts)
+                chosen_host.hosted_chunks.add(chunk_id)
+                total_upload_attempts += 1
+                total_successful_uploads += 1  # Since we're only picking online hosts, assume success.
+
+        success_rate = (total_successful_uploads / total_upload_attempts) * 100 if total_upload_attempts > 0 else 0
+
+        print(f"Upload Attempt: {total_successful_uploads} successes, {total_upload_attempts - total_successful_uploads} failures ({success_rate:.2f}% success rate)")
 
         return {
-            'successes': success_count,
-            'failures': fail_count,
+            'successes': total_successful_uploads,
+            'failures': total_upload_attempts - total_successful_uploads,  # should always be 0 now
             'success_rate': success_rate
         }
 

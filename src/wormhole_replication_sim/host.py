@@ -17,6 +17,7 @@ class Host:
         self.is_online = True
         self.uptime_cycle_counter = uptime_cycle_counter
         self.hosted_file = set()
+        self.hosted_chunks = set()
 
     def cycle_uptime(self):
         self.uptime_cycle_counter += 1

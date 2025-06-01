@@ -1,7 +1,7 @@
 # downloader.py
 
 import random
-from config import DOWNLOAD_WAIT_TIME_MINUTES
+from config import DOWNLOAD_WAIT_TIME_MINUTES, NUMBER_OF_CHUNKS
 
 class Downloader:
     def __init__(self, file_ready_tick: int, seed_offset=0):
@@ -16,23 +16,32 @@ class Downloader:
     def download_file(self, hosts):
         available_hosts = 0
         unavailable_hosts = 0
-        found_file = False
 
+        # Count available and unavailable hosts
         for host in hosts:
             if host.is_online:
                 available_hosts += 1
-                if "test_file" in host.hosted_file:
-                    found_file = True
             else:
                 unavailable_hosts += 1
 
-        if found_file:
+        # Try to find each chunk
+        all_chunks_available = True
+        for chunk_id in range(NUMBER_OF_CHUNKS):
+            found = any(
+                host.is_online and (chunk_id in host.hosted_chunks)
+                for host in hosts
+            )
+            if not found:
+                all_chunks_available = False
+                break  # no need to check further — file is unrecoverable
+
+        if all_chunks_available:
             print(f"Download Succeeded: {available_hosts} hosts available, {unavailable_hosts} hosts unavailable.")
         else:
             print(f"Download Failed: {available_hosts} hosts available, {unavailable_hosts} hosts unavailable.")
 
         return {
-            'success': found_file,
+            'success': all_chunks_available,
             'available_hosts': available_hosts,
             'unavailable_hosts': unavailable_hosts
         }
