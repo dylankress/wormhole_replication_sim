@@ -21,3 +21,7 @@ DOWNTIME_RANGE_MINUTES = (30, 360)
 # ----- Download Node Controls -----
 DOWNLOAD_WAIT_TIME_MINUTES = (2, 30)
 
+# ----- Network Speed Controls -----
+HOST_UPLOAD_SPEED_MBPS = 5
+USER_DOWNLOAD_BANDWIDTH_MBPS = 100
+CHUNK_SIZE_MB = 10
